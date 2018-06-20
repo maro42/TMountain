@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="corp">
+	<!-- login -->
+	<select id="corp_login" parameterType="hashmap" resultType="java.lang.String">
+		SELECT corp_id
+		FROM corp
+		WHERE (corp_id = #{corp_id} AND corp_pass = #{corp_pass})
+	</select>
+	
+	<!-- search corpInfo -->
+	<select id="corp_corpinfo" parameterType="hashmap" resultType="corpDTO">
+		SELECT *
+		FROM corp
+		WHERE (corp_id = #{corp_id})
+	</select>
+	
+	<select id="month_list" parameterType="hashmap" resultType="pointDTO">
+		SELECT *
+		FROM point
+		WHERE month(point_date) = #{month} AND year(point_date) = #{year} AND corp_id = #{corp_id}
+	</select>
+	
+	<select id="cal_data" parameterType="hashmap" resultType="caldataDTO">
+		SELECT SUM(p.point_point) AS sum_point, c.corp_name AS corp_name
+		FROM corp c, point p
+		WHERE c.corp_id = #{corp_id} AND month(p.point_date) = #{month} AND year(p.point_date) = #{year};
+	</select>
+	
+	<insert id="insert_cal" parameterType="calDTO">
+		INSERT INTO cal(cal_date, cal_point, cal_ask, corp_id, corp_caldate)
+		VALUES(curdate(), #{calPoint}, #{calAsk}, #{corpId}, #{corpCaldate})
+	</insert>
+	
+	<select id="register_result" parameterType="hashmap" resultType="calDTO">
+		SELECT *
+		FROM cal
+		WHERE corp_id = #{corp_id}
+	</select>
+</mapper>
